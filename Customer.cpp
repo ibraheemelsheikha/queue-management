@@ -1,4 +1,5 @@
 #include "Customer.h"
+
 #include <iostream>
 
 using namespace std;
@@ -10,7 +11,7 @@ Customer::Customer(double arrival, int items) {
   next = nullptr;
 }
 
-Customer::~Customer() {}
+Customer::~Customer() { test(); }
 
 double Customer::get_arrivalTime() { return arrivalTime; }
 
