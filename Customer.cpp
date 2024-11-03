@@ -11,7 +11,7 @@ Customer::Customer(double arrival, int items) {
   next = nullptr;
 }
 
-Customer::~Customer() { test(); }
+Customer::~Customer() {}
 
 double Customer::get_arrivalTime() { return arrivalTime; }
 
