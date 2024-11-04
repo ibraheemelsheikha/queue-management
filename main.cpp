@@ -21,12 +21,11 @@ void openRegister(
     stringstream &lineStream,
     string mode);  // register opens (it is upto customers to join)
 void closeRegister(stringstream &lineStream,
-                   string mode);  // register closes 
+                   string mode);  // register closes
 
 // Customer
 void addCustomer(stringstream &lineStream,
                  string mode);  // customer wants to join
-
 
 // Helper functions
 bool getInt(stringstream &lineStream, int &iValue);
@@ -34,10 +33,10 @@ bool getDouble(stringstream &lineStream, double &dValue);
 bool foundMoreArgs(stringstream &lineStream);
 
 // Global variables
-RegisterList *registerList; // holding the list of registers
-QueueList *doneList; // holding the list of customers served
-QueueList *singleQueue; // holding customers in a single virtual queue
-double expTimeElapsed; // time elapsed since the beginning of the simulation
+RegisterList *registerList;  // holding the list of registers
+QueueList *doneList;         // holding the list of customers served
+QueueList *singleQueue;      // holding customers in a single virtual queue
+double expTimeElapsed;  // time elapsed since the beginning of the simulation
 
 // List of commands:
 // To open a register
@@ -76,7 +75,7 @@ int main() {
     getline(cin, line);
   }
 
-  // You have to make sure all dynamically allocated memory is freed 
+  // You have to make sure all dynamically allocated memory is freed
   // before return 0
   return 0;
 }
@@ -144,10 +143,9 @@ void openRegister(stringstream &lineStream, string mode) {
   // Check if the register is already open
   // If it's open, print an error message
   // Otherwise, open the register
-  // If we were simulating a single queue, 
-  // and there were customers in line, then 
+  // If we were simulating a single queue,
+  // and there were customers in line, then
   // assign a customer to the new register
-  
 }
 
 void closeRegister(stringstream &lineStream, string mode) {
@@ -164,8 +162,7 @@ void closeRegister(stringstream &lineStream, string mode) {
   }
   // Check if the register is open
   // If it is open dequeue it and free it's memory
-  // Otherwise, print an error message 
-  
+  // Otherwise, print an error message
 }
 
 bool getInt(stringstream &lineStream, int &iValue) {

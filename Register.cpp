@@ -39,10 +39,22 @@ double Register::calculateDepartTime() {
   // Get the departure time of the first customer in the queue
   // returns -1 if no customer is in the queue
 
-  if (queue = nullptr) {
+  if (queue == nullptr) {
     return -1;
   } else {
-    return queue->get_head()->get_departureTime();
+    Customer* customer = queue->get_head();
+    double processing_time = customer->get_numOfItems() * secPerItem;
+
+    // If the customer at the head of the queue arrived after the register became available, 
+    // then the departure time is the processing time of the customer plus the arrival time of the customer
+    if (customer->get_arrivalTime() >= availableTime) {
+      customer->set_departureTime(processing_time + overheadPerCustomer + customer->get_arrivalTime());
+    }
+    // Otherwise, the departure time is the processing time of the customer plus the time the register became available
+    else {
+      customer->set_departureTime(processing_time + overheadPerCustomer + availableTime);
+    }
+    return customer->get_departureTime();
   }
 }
 
@@ -51,9 +63,8 @@ void Register::departCustomer(QueueList* doneList) {
   // update availableTime of the register
 
   Customer* customer = queue->dequeue();
-  customer->set_departureTime()
   doneList->enqueue(customer);
-
+  availableTime = customer->get_departureTime();
 }
 
 void Register::print() {
