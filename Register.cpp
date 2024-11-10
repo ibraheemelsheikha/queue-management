@@ -15,7 +15,7 @@ Register::Register(int id, double timePerItem, double overhead,
                             // queue
 }
 
-Register::~Register() { delete this; }  // is this correct??
+Register::~Register() { delete queue; }  // is this correct??
 
 QueueList* Register::get_queue_list() { return queue; }
 
@@ -39,23 +39,26 @@ double Register::calculateDepartTime() {
   // Get the departure time of the first customer in the queue
   // returns -1 if no customer is in the queue
 
-  if (queue == nullptr) {
+  Customer* customer = queue->get_head();
+  if (customer == nullptr) {
     return -1;
-  } else {
-    Customer* customer = queue->get_head();
-    double processing_time = customer->get_numOfItems() * secPerItem;
-
-    // If the customer at the head of the queue arrived after the register became available, 
-    // then the departure time is the processing time of the customer plus the arrival time of the customer
-    if (customer->get_arrivalTime() >= availableTime) {
-      customer->set_departureTime(processing_time + overheadPerCustomer + customer->get_arrivalTime());
-    }
-    // Otherwise, the departure time is the processing time of the customer plus the time the register became available
-    else {
-      customer->set_departureTime(processing_time + overheadPerCustomer + availableTime);
-    }
-    return customer->get_departureTime();
   }
+  double processing_time = customer->get_numOfItems() * secPerItem;
+  double departTime = 0;
+
+  // If the customer at the head of the queue arrived after the register became
+  // available, then the departure time is the processing time of the customer
+  // plus the arrival time of the customer
+  if (customer->get_arrivalTime() >= availableTime) {
+    departTime =
+        processing_time + overheadPerCustomer + customer->get_arrivalTime();
+  }
+  // Otherwise, the departure time is the processing time of the customer plus
+  // the time the register became available
+  else {
+    departTime = processing_time + overheadPerCustomer + availableTime;
+  }
+  return departTime;
 }
 
 void Register::departCustomer(QueueList* doneList) {
@@ -64,6 +67,7 @@ void Register::departCustomer(QueueList* doneList) {
 
   Customer* customer = queue->dequeue();
   doneList->enqueue(customer);
+  std::cout << "Departed a customer at register ID " << ID << " at " << customer->get_departureTime() << std::endl;
   availableTime = customer->get_departureTime();
 }
 

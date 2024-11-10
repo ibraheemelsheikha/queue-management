@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/ibrah/Desktop/School/University/Second-Year/Fall/ECE244/ece244-labs/lab4",
-      "program": "c:/Users/ibrah/Desktop/School/University/Second-Year/Fall/ECE244/ece244-labs/lab4/build/Debug/outDebug",
+      "cwd": "c:/Users/ibrah/Desktop/School/University/Second-Year/Fall/ECE244/ece244-labs/lab4/lab4-queue-management",
+      "program": "c:/Users/ibrah/Desktop/School/University/Second-Year/Fall/ECE244/ece244-labs/lab4/lab4-queue-management/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
