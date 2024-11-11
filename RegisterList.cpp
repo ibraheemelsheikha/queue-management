@@ -11,7 +11,13 @@ RegisterList::RegisterList() {
 }
 
 RegisterList::~RegisterList() {
-  // Delete all registers in the list
+  if (head == nullptr) {
+  }
+  while (head != nullptr) {
+    Register* temp = head;
+    head = head->get_next();
+    delete temp;
+  }
 }
 
 Register* RegisterList::get_head() { return head; }
@@ -121,43 +127,37 @@ Register* RegisterList::dequeue(int ID) {
 Register* RegisterList::calculateMinDepartTimeRegister(double expTimeElapsed) {
   // return the register with minimum time of departure of its customer
   // if all registers are free, return nullptr
-  // cout << "debug: made it to calcMinDepReg function" << endl;
-  
+
   if (head == nullptr) {
-    // cout << "debug: head is null, min depart register is nullptr" << endl;
     return nullptr;
   }
-  
+
   Register* temp = head;
   Register* min = nullptr;
   bool isEmpty = true;
 
   // if all registers are free, return nullptr
   while (temp != nullptr && isEmpty) {
-    // cout << "debug: isEmpty variable: " << isEmpty << endl;
     if (temp->calculateDepartTime() != -1) {
       isEmpty = false;
     }
     temp = temp->get_next();
   }
   if (isEmpty) {
-    // cout << "debug: all registers are free, min depart register is nullptr" << endl;
     return nullptr;
   }
-  
+
   temp = head;
   double minDepartTime = 0;
   min = nullptr;
-  // cout << "debug: the min depart register is initialized to nullptr and the min depart time is initialized to " << minDepartTime << endl;
-  
-  while (temp != nullptr) {  
+
+  while (temp != nullptr) {
     double currentDepartTime = temp->calculateDepartTime();
     if ((currentDepartTime != -1) && (currentDepartTime <= expTimeElapsed)) {
       if (min == nullptr ||
           ((min != nullptr) && (minDepartTime > currentDepartTime))) {
         minDepartTime = currentDepartTime;
         min = temp;
-        // cout << "debug: the min depart register is " << min->get_ID() << " and the min depart time is " << minDepartTime << endl;
       }
     }
     temp = temp->get_next();

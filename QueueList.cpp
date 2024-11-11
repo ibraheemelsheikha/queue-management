@@ -6,7 +6,13 @@ QueueList::QueueList() { head = nullptr; }
 
 QueueList::QueueList(Customer* customer) { head = customer; }
 
-QueueList::~QueueList() {}
+QueueList::~QueueList() {
+  while (head != nullptr) {
+    Customer* temp = head;
+    head = head->get_next();
+    delete temp;
+  }
+}
 
 Customer* QueueList::get_head() { return head; }
 
@@ -23,7 +29,6 @@ void QueueList::enqueue(Customer* customer) {
     tail->set_next(customer);
   }
   customer->set_next(nullptr);
-  
 }
 
 Customer* QueueList::dequeue() {
@@ -34,6 +39,7 @@ Customer* QueueList::dequeue() {
   }
   Customer* temp = head;
   head = head->get_next();
+  temp->set_next(nullptr);
   return temp;
 }
 

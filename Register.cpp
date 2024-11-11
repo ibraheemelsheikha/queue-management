@@ -15,7 +15,7 @@ Register::Register(int id, double timePerItem, double overhead,
                             // queue
 }
 
-Register::~Register() { delete queue; }  // is this correct??
+Register::~Register() { delete queue; }
 
 QueueList* Register::get_queue_list() { return queue; }
 
@@ -67,7 +67,8 @@ void Register::departCustomer(QueueList* doneList) {
 
   Customer* customer = queue->dequeue();
   doneList->enqueue(customer);
-  std::cout << "Departed a customer at register ID " << ID << " at " << customer->get_departureTime() << std::endl;
+  std::cout << "Departed a customer at register ID " << ID << " at "
+            << customer->get_departureTime() << std::endl;
   availableTime = customer->get_departureTime();
 }
 

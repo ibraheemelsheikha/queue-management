@@ -32,6 +32,7 @@ bool getInt(stringstream &lineStream, int &iValue);
 bool getDouble(stringstream &lineStream, double &dValue);
 bool foundMoreArgs(stringstream &lineStream);
 void updateSingle();
+void updateMultiple();
 
 // Global variables
 RegisterList *registerList;  // holding the list of registers
@@ -76,6 +77,38 @@ int main() {
     getline(cin, line);
   }
 
+  Customer *current = doneList->get_head();
+  double maxWaitTime = 0, totalWaitTime = 0;
+  int totalCustomers = 0;
+  while (current != nullptr) {
+    totalCustomers++;
+    double waitTime = current->get_departureTime() - current->get_arrivalTime();
+    totalWaitTime += waitTime;
+    if (maxWaitTime < waitTime) {
+      maxWaitTime = waitTime;
+    }
+    current = current->get_next();
+  }
+  double average = totalWaitTime / totalCustomers;
+  double varianceSum = 0;
+  current = doneList->get_head();
+  while (current != nullptr) {
+    double waitTime = current->get_departureTime() - current->get_arrivalTime();
+    varianceSum += pow(waitTime - average, 2);
+    current = current->get_next();
+  }
+  double variance = varianceSum / totalCustomers;
+  double stdDev = sqrt(variance);
+
+  cout << endl << "Finished at time " << expTimeElapsed << endl;
+  cout << "Statistics:" << endl;
+  cout << "  Maximum wait time: " << maxWaitTime << endl;
+  cout << "  Average wait time: " << average << endl;
+  cout << "  Standard Deviation of wait time: " << stdDev << endl;
+
+  delete doneList;
+  delete singleQueue;
+  delete registerList;
   // You have to make sure all dynamically allocated memory is freed
   // before return 0
   return 0;
@@ -102,7 +135,7 @@ void addCustomer(stringstream &lineStream, string mode) {
   int items;
   double timeElapsed;
   if (!getInt(lineStream, items) || !getDouble(lineStream, timeElapsed)) {
-    cout << "Error: too few arguments" << endl;
+    cout << "Error: too few arguments." << endl;
     return;
   }
   if (foundMoreArgs(lineStream)) {
@@ -123,6 +156,17 @@ void addCustomer(stringstream &lineStream, string mode) {
     } else {
       updateSingle();
     }
+  } else if (mode == "multiple") {
+    updateMultiple();
+    cout << "A customer entered" << endl;
+    Register *shortestRegister = registerList->get_min_items_register();
+    shortestRegister->get_queue_list()->enqueue(customer);
+    if (shortestRegister->get_queue_list()->get_head() == customer) {
+      customer->set_departureTime(shortestRegister->calculateDepartTime());
+    }
+    cout << "Queued a customer with quickest register "
+         << shortestRegister->get_ID() << endl;
+    updateMultiple();
   }
   return;
 }
@@ -146,7 +190,7 @@ void openRegister(stringstream &lineStream, string mode) {
   if (!getInt(lineStream, ID) || !getDouble(lineStream, secPerItem) ||
       !getDouble(lineStream, setupTime) ||
       !getDouble(lineStream, timeElapsed)) {
-    cout << "Error: too few arguments" << endl;
+    cout << "Error: too few arguments." << endl;
     return;
   }
   if (foundMoreArgs(lineStream)) {
@@ -175,6 +219,10 @@ void openRegister(stringstream &lineStream, string mode) {
     registerList->enqueue(newRegister);
     cout << "Opened register " << ID << endl;
     updateSingle();
+  } else if (mode == "multiple") {
+    updateMultiple();
+    registerList->enqueue(newRegister);
+    cout << "Opened register " << ID << endl;
   }
   return;
 }
@@ -203,6 +251,8 @@ void closeRegister(stringstream &lineStream, string mode) {
   expTimeElapsed += timeElapsed;
   if (mode == "single") {
     updateSingle();
+  } else if (mode == "multiple") {
+    updateMultiple();
   }
 
   Register *closedRegister = registerList->dequeue(ID);
@@ -245,7 +295,6 @@ bool foundMoreArgs(stringstream &lineStream) {
 }
 
 void updateSingle() {
-  // cout << "debug: total exp elapsed time: " << expTimeElapsed << endl;
   if (registerList->get_head() == nullptr) {
     return;
   }
@@ -254,19 +303,7 @@ void updateSingle() {
       registerList->calculateMinDepartTimeRegister(expTimeElapsed);
   Register *freeRegister = registerList->get_free_register();
 
-  // if (minRegister == nullptr) {
-  //   if (freeRegister == nullptr) {
-  //     // all registers are occupied
-  //     cout << "debug: all regs occupied, returning" << endl;
-  //     return;
-  //   }
-  //   // handle case when all regs are free
-  //   minRegister = freeRegister;
-  // }
-
   while (freeRegister != nullptr && singleQueue->get_head() != nullptr) {
-    // cout << "debug: entered freeRegister loop" << endl;
-    // cout << "debug: freeRegister is: " << freeRegister->get_ID() << endl;
     Customer *nextCustomer = singleQueue->dequeue();
     if (nextCustomer != nullptr) {
       freeRegister->get_queue_list()->enqueue(nextCustomer);
@@ -278,7 +315,6 @@ void updateSingle() {
   }
 
   while (minRegister != nullptr) {
-    // cout << "debug: entered minRegister loop" << endl;
     minRegister->departCustomer(doneList);
     Customer *nextCustomer = singleQueue->dequeue();
     if (nextCustomer != nullptr) {
@@ -288,6 +324,31 @@ void updateSingle() {
       nextCustomer->set_departureTime(minRegister->calculateDepartTime());
     }
 
+    minRegister = registerList->calculateMinDepartTimeRegister(expTimeElapsed);
+  }
+}
+
+void updateMultiple() {
+  if (registerList->get_head() == nullptr) {
+    return;
+  }
+
+  Register *minRegister =
+      registerList->calculateMinDepartTimeRegister(expTimeElapsed);
+
+  if (minRegister != nullptr) {
+    Customer *nextCustomer = minRegister->get_queue_list()->get_head();
+    if (nextCustomer != nullptr) {
+      nextCustomer->set_departureTime(minRegister->calculateDepartTime());
+    }
+  }
+
+  while (minRegister != nullptr) {
+    minRegister->departCustomer(doneList);
+    Customer *nextCustomer = minRegister->get_queue_list()->get_head();
+    if (nextCustomer != nullptr) {
+      nextCustomer->set_departureTime(minRegister->calculateDepartTime());
+    }
     minRegister = registerList->calculateMinDepartTimeRegister(expTimeElapsed);
   }
 }

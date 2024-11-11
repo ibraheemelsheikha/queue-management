@@ -16,7 +16,8 @@ class Register {
   Register* next;
 
  public:
-  Register(int ID, double secPerItem, double overheadPerCustomer, double entryTime);
+  Register(int ID, double secPerItem, double overheadPerCustomer,
+           double entryTime);
   ~Register();
 
   int get_ID();
@@ -29,11 +30,11 @@ class Register {
   void set_availableTime(double availableSince);
   void set_next(Register* next);
 
+  double calculateDepartTime();  // calculate the time at which a customer will
+                                 // be departed
+  void departCustomer(QueueList* doneList);  // remove a customer from the queue
 
-  double calculateDepartTime(); // calculate the time at which a customer will be departed
-  void departCustomer(QueueList *doneList); // remove a customer from the queue
-
-  void print(); 
+  void print();
 };
 
 #endif /* Register_h */
